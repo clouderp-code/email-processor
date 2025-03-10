@@ -415,3 +415,102 @@ python scripts/update_kb.py
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+### Adding New Agents
+
+1. Create new agent class:
+```python
+from agents.base_agent import BaseAgent
+
+class NewAgent(BaseAgent):
+    async def process(self, data):
+        # Implementation
+        pass
+```
+
+2. Register in orchestrator:
+```python
+self.agent_mapping["NEW_CATEGORY"] = NewAgent()
+```
+
+## Monitoring
+
+### Available Metrics
+
+1. Agent Performance:
+   - Processing time
+   - Success rates
+   - Error rates
+   - Classification accuracy
+
+2. System Metrics:
+   - Queue sizes
+   - Response times
+   - Resource usage
+
+3. Business Metrics:
+   - Email categories distribution
+   - Response satisfaction
+   - Processing volume
+
+### Dashboards
+
+Access monitoring at:
+- Metrics: `http://localhost:9090`
+- Logs: `http://localhost:5601`
+- Traces: `http://localhost:16686`
+
+## Troubleshooting
+
+### Common Issues
+
+1. Agent Failures:
+```bash
+# Check agent logs
+tail -f logs/agents.log
+
+# Reset agent state
+python scripts/reset_agent.py --agent classification
+```
+
+2. Integration Issues:
+```bash
+# Test Gmail connection
+python scripts/test_gmail.py
+
+# Verify calendar access
+python scripts/test_calendar.py
+```
+
+3. Performance Issues:
+```bash
+# Check queue status
+python scripts/check_queues.py
+
+# Monitor processing times
+python scripts/monitor_performance.py
+```
+
+## Security
+
+1. Data Protection:
+   - Email encryption
+   - Secure credential storage
+   - PII handling
+
+2. Access Control:
+   - API authentication
+   - Agent permissions
+   - Audit logging
+
+## Contributing
+
+1. Fork repository
+2. Create feature branch
+3. Implement changes
+4. Add tests
+5. Submit pull request
+
+## License
+
+This project is licensed under the MIT License - see LICENSE file for details.
