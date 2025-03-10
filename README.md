@@ -1,429 +1,344 @@
-# Enhanced Email Processor with Gmail Integration
+# Intelligent Multi-Agent Email Processing System
 
-A sophisticated email processing system that combines ML-powered classification, automated response generation, and Gmail integration for real-time email processing.
+A sophisticated email automation system utilizing six specialized AI agents for comprehensive email processing and response generation.
 
 ## Table of Contents
-- [Features](#features)
-- [System Architecture](#system-architecture)
-- [Prerequisites](#prerequisites)
+- [System Overview](#system-overview)
+- [Agent Architecture](#agent-architecture)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Gmail Integration Setup](#gmail-integration-setup)
 - [Usage](#usage)
-- [API Documentation](#api-documentation)
-- [Monitoring & Analytics](#monitoring--analytics)
-- [Development Guide](#development-guide)
-- [Troubleshooting](#troubleshooting)
-- [Security Considerations](#security-considerations)
+- [API Reference](#api-reference)
+- [Development](#development)
+- [Monitoring](#monitoring)
 
-## Features
+## System Overview
 
-### Core Features
-- 🤖 ML-powered email classification and response generation
-- 📧 Real-time Gmail integration and monitoring
-- 🔐 Authentication and authorization
-- 📊 Comprehensive monitoring and analytics
-- 🚀 RESTful API endpoints
-- 💾 Database integration for email storage
-- 📝 Detailed logging system
-
-### Gmail Integration Features
-- Real-time email monitoring
-- Automatic email processing
-- Manual sync capabilities
-- Multi-part email handling
-- Secure OAuth2 authentication
-- Configurable sync intervals
-
-## System Architecture
-
+### Multi-Agent Architecture
 ```plaintext
-┌─────────────────┐     ┌──────────────────┐     ┌────────────────┐
-│  Gmail Service  │────▶│  Async Worker    │────▶│  ML Processor  │
-└─────────────────┘     └──────────────────┘     └────────────────┘
-         │                       │                        │
-         │                       │                        │
-         ▼                       ▼                        ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                          Database Layer                         │
-└─────────────────────────────────────────────────────────────────┘
+                                ┌──────────────────┐
+                                │   Email Input    │
+                                └────────┬─────────┘
+                                        │
+                                        ▼
+                                ┌──────────────────┐
+                                │  Email Intake    │
+                                │     Agent        │
+                                └────────┬─────────┘
+                                        │
+                                        ▼
+                                ┌──────────────────┐
+                                │ Classification   │
+                                │     Agent        │
+                                └─┬──────┬──────┬──┘
+                                  │      │      │
+          ┌─────────────────┬────┴──┬───┴────┬─┴───────────┐
+          ▼                 ▼        ▼        ▼             ▼
+┌──────────────────┐ ┌──────────┐ ┌────────┐ ┌────────┐ ┌─────────┐
+│ Inquiry Response │ │ Support  │ │Meeting │ │Follow-up│ │  Other  │
+│      Agent       │ │  Agent   │ │ Agent  │ │ Agent  │ │ Agents  │
+└────────┬─────────┘ └────┬─────┘ └───┬────┘ └───┬────┘ └────┬────┘
+         │                │           │          │           │
+         └────────────────┴───────────┴──────────┴───────────┘
+                                    │
+                                    ▼
+                            ┌──────────────────┐
+                            │ Response Output  │
+                            └──────────────────┘
 ```
 
-## Prerequisites
+## Agent Architecture
 
-- Python 3.8+
-- PostgreSQL 12+
-- Google Cloud Platform account
-- Gmail account with API access
-- Virtual environment (recommended)
+### 1. Email Intake Agent
+Handles initial email processing and preparation.
 
-## Installation
+```python
+from agents.email_intake_agent import EmailIntakeAgent
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/enhanced-email-processor.git
-cd enhanced-email-processor
+intake_agent = EmailIntakeAgent()
+result = await intake_agent.process(email_data)
 ```
 
-2. Create and activate virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+**Features:**
+- Email parsing and normalization
+- Entity extraction
+- Attachment handling
+- Content cleaning
+- Metadata extraction
+
+**Configuration:**
+```yaml
+intake_agent:
+  max_email_size: 10MB
+  supported_attachments: ['pdf', 'doc', 'docx']
+  entity_extraction: true
+  content_cleaning: true
 ```
 
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
+### 2. Classification Agent
+Determines email category and routes to appropriate agent.
+
+```python
+from agents.classification_agent import ClassificationAgent
+
+classifier = ClassificationAgent()
+category = await classifier.process(parsed_email)
+```
+
+**Features:**
+- Multi-category classification
+- Priority determination
+- Confidence scoring
+- Intelligent routing
+
+**Categories:**
+- CLIENT_INQUIRY
+- SUPPORT_REQUEST
+- MEETING_REQUEST
+- FOLLOW_UP
+
+### 3. Inquiry Responder Agent
+Handles general inquiries and information requests.
+
+```python
+from agents.inquiry_responder_agent import InquiryResponderAgent
+
+inquiry_agent = InquiryResponderAgent()
+response = await inquiry_agent.process(classified_email)
+```
+
+**Features:**
+- Context-aware responses
+- Template customization
+- Professional formatting
+- Brand voice maintenance
+
+### 4. Support Agent
+Processes technical support requests.
+
+```python
+from agents.support_agent import SupportAgent
+
+support_agent = SupportAgent(knowledge_base_client)
+response = await support_agent.process(support_request)
+```
+
+**Features:**
+- Knowledge base integration
+- Technical response generation
+- Ticket creation
+- Solution recommendation
+
+### 5. Meeting Responder Agent
+Handles meeting scheduling requests.
+
+```python
+from agents.meeting_responder_agent import MeetingResponderAgent
+
+meeting_agent = MeetingResponderAgent(calendar_credentials)
+response = await meeting_agent.process(meeting_request)
+```
+
+**Features:**
+- Calendar availability checking
+- Time slot suggestion
+- Meeting scheduling
+- Calendar event creation
+
+### 6. Follow-up Agent
+Manages follow-up communications.
+
+```python
+from agents.follow_up_agent import FollowUpAgent
+
+follow_up_agent = FollowUpAgent(vector_db_client)
+response = await follow_up_agent.process(follow_up_request)
+```
+
+**Features:**
+- Conversation history analysis
+- Personalized follow-ups
+- Context maintenance
+- Engagement tracking
+
+## Implementation
+
+### Base Agent Class
+All agents inherit from the base agent class:
+
+```python
+class BaseAgent(ABC):
+    @abstractmethod
+    async def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    async def log_processing(self, input_data: Dict[str, Any], 
+                           result: Dict[str, Any]):
+        pass
+```
+
+### Agent Orchestration
+The EmailOrchestrator manages agent workflow:
+
+```python
+class EmailOrchestrator:
+    def __init__(self, config: Dict[str, Any]):
+        self.intake_agent = EmailIntakeAgent()
+        self.classification_agent = ClassificationAgent()
+        self.inquiry_agent = InquiryResponderAgent()
+        self.support_agent = SupportAgent(config['kb_client'])
+        self.meeting_agent = MeetingResponderAgent(config['calendar'])
+        self.follow_up_agent = FollowUpAgent(config['vector_db'])
+
+    async def process_email(self, email_data: Dict[str, Any]) -> Dict[str, Any]:
+        # Implementation of email processing workflow
 ```
 
 ## Configuration
 
-### 1. Environment Variables
-Create `.env` file in project root:
-```env
-# Server Settings
-HOST=0.0.0.0
-PORT=8000
-DEBUG=False
+### Agent Configuration
+Configure individual agents in `config/agents.yaml`:
 
-# Database Configuration
-DATABASE_URL=postgresql://user:password@localhost:5432/email_processor
-DATABASE_POOL_SIZE=5
-DATABASE_MAX_OVERFLOW=10
+```yaml
+# Email Intake Agent
+intake_agent:
+  batch_size: 100
+  supported_attachments: ['pdf', 'doc', 'docx', 'txt']
+  max_content_length: 50000
 
-# Authentication
-SECRET_KEY=your-secure-secret-key
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+# Classification Agent
+classification_agent:
+  model: deepseek-base
+  confidence_threshold: 0.75
+  categories:
+    - INQUIRY
+    - SUPPORT
+    - MEETING
+    - FOLLOW_UP
 
-# Gmail Configuration
-GMAIL_CREDENTIALS_PATH=credentials.json
-GMAIL_TOKEN_PATH=token.pickle
-GMAIL_SYNC_INTERVAL=60
+# Inquiry Agent
+inquiry_agent:
+  response_template_path: templates/inquiry
+  max_response_length: 2000
+  tone: professional
 
-# ML Model Settings
-MODEL_PATH=models/classifier
-MODEL_VERSION=1.0
-CONFIDENCE_THRESHOLD=0.75
+# Support Agent
+support_agent:
+  kb_index_path: kb/support
+  ticket_system_url: http://support.example.com
+  response_template_path: templates/support
 
-# Monitoring
-ENABLE_PROMETHEUS=true
-METRICS_PORT=9090
-LOG_LEVEL=INFO
+# Meeting Agent
+meeting_agent:
+  calendar_id: primary
+  meeting_duration_default: 60
+  timezone: UTC
+  max_suggestions: 5
+
+# Follow-up Agent
+follow_up_agent:
+  history_lookup_days: 30
+  vector_db_collection: conversations
+  response_template_path: templates/follow_up
 ```
 
-### 2. Database Setup
-```bash
-# Create database
-createdb email_processor
+## Usage Examples
 
-# Run migrations
-python database/migrations.py
-```
+### 1. Processing a New Email
 
-## Gmail Integration Setup
-
-### 1. Google Cloud Platform Setup
-
-1. Create new project in [Google Cloud Console](https://console.cloud.google.com)
-2. Enable Gmail API:
-   ```
-   Dashboard → Enable APIs and Services → Gmail API → Enable
-   ```
-
-3. Configure OAuth Consent Screen:
-   - Go to "OAuth consent screen"
-   - Choose "External"
-   - Fill in application details
-   - Add required scopes:
-     - `https://www.googleapis.com/auth/gmail.readonly`
-     - `https://www.googleapis.com/auth/gmail.modify`
-
-4. Create OAuth Credentials:
-   - Go to "Credentials"
-   - Create "OAuth 2.0 Client ID"
-   - Application type: Desktop Application
-   - Download JSON and save as `credentials.json`
-
-### 2. Application Configuration
-
-1. Place credentials:
-```bash
-mv credentials.json /path/to/project/credentials.json
-```
-
-2. First-time authentication:
-```bash
-python scripts/gmail_auth.py
-```
-
-### 3. Gmail Monitoring Configuration
-
-Configure monitoring parameters in `.env`:
-```env
-GMAIL_SYNC_INTERVAL=60  # Check interval in seconds
-GMAIL_BATCH_SIZE=100    # Number of emails per batch
-GMAIL_ERROR_RETRY=300   # Retry interval on error (seconds)
-```
-
-## Usage
-
-### Starting the Server
-
-1. Start the application:
-```bash
-uvicorn main:app --reload
-```
-
-2. Access the application:
-- API: `http://localhost:8000`
-- Documentation: `http://localhost:8000/docs`
-- Metrics: `http://localhost:8000/metrics`
-
-### API Documentation
-
-#### Authentication Endpoints
-
-```bash
-POST /auth/register
-{
-    "username": "user@example.com",
-    "password": "secure_password"
-}
-
-POST /auth/login
-{
-    "username": "user@example.com",
-    "password": "secure_password"
-}
-```
-
-#### Email Processing Endpoints
-
-```bash
-# Process single email
-POST /api/v1/emails/process
-{
-    "sender": "sender@example.com",
-    "subject": "Test Subject",
-    "content": "Email content here"
-}
-
-# Get processed emails
-GET /api/v1/emails?page=1&limit=10
-
-# Get specific email
-GET /api/v1/emails/{email_id}
-```
-
-#### Gmail Integration Endpoints
-
-```bash
-# Manual sync
-POST /api/v1/gmail/sync
-
-# Get Gmail status
-GET /api/v1/gmail/status
-
-# Configure Gmail settings
-PUT /api/v1/gmail/config
-{
-    "sync_interval": 60,
-    "batch_size": 100
-}
-```
-
-## Monitoring & Analytics
-
-### Available Metrics
-
-1. Email Processing Metrics:
-   - Total emails processed
-   - Processing time distribution
-   - Success/failure rates
-   - ML model confidence scores
-
-2. Gmail Specific Metrics:
-   - Sync operations
-   - New emails detected
-   - Processing queue size
-   - Error rates
-
-### Accessing Metrics
-
-1. Prometheus Endpoint:
-```bash
-GET /metrics
-```
-
-2. Grafana Dashboard:
-   - Import provided dashboard template
-   - Configure data source
-   - Access at `http://localhost:3000`
-
-## Development Guide
-
-### Project Structure
-```
-project/
-├── api/               # API endpoints and authentication
-├── config/            # Configuration settings
-├── database/          # Database models and connection
-├── ml_models/         # ML model implementations
-├── monitoring/        # Metrics and logging
-├── requirements.txt   # Project dependencies
-└── main.py           # Application entry point
-```
-
-### Running Tests
-
-```bash
-pytest tests/
-```
-
-### Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Troubleshooting
-
-### Common Issues
-
-1. Database Connection Issues
-```bash
-# Check database status
-sudo service postgresql status
-
-# Verify database URL in .env
-DATABASE_URL=postgresql://user:password@localhost:5432/email_processor
-```
-
-2. ML Model Loading Issues
-```bash
-# Ensure model files are downloaded
-python -m ml_models.download_models
-```
-
-### Getting Help
-
-- Open an issue in the GitHub repository
-- Check the logs in `logs/app.log`
-- Consult the API documentation at `/docs`
-
-## Performance Optimization
-
-For production deployment, consider:
-- Using Gunicorn as a WSGI server
-- Implementing caching (Redis recommended)
-- Setting up database indexing
-- Configuring proper logging levels
-
-## Security Considerations
-
-- Keep your `.env` file secure and never commit it
-- Regularly update dependencies
-- Use strong passwords for database and JWT secrets
-- Implement rate limiting for API endpoints
-- Regular security audits
-
-## Acknowledgments
-
-- FastAPI for the excellent web framework
-- Transformers library for ML capabilities
-- SQLAlchemy for database operations
-
-### Adding New Features
-
-1. Adding a New Email Category:
 ```python
-# 1. Update CATEGORIES in classifier_agent.py
-CATEGORIES = [..., "NEW_CATEGORY"]
+from workflow.email_orchestrator import EmailOrchestrator
 
-# 2. Create new responder in response_generators.py
-class NewCategoryResponder(BaseResponseGenerator):
-    async def generate_response(self, email_data):
-        # Implementation
+# Initialize orchestrator
+orchestrator = EmailOrchestrator(config)
+
+# Process email
+email_data = {
+    "sender": "user@example.com",
+    "subject": "Meeting Request",
+    "content": "Can we schedule a meeting...",
+    "timestamp": "2024-01-20T10:00:00Z"
+}
+
+result = await orchestrator.process_email(email_data)
 ```
 
-## Troubleshooting
+### 2. Using Individual Agents
 
-### Common Issues
+```python
+# Classification
+classification_result = await classification_agent.process({
+    "subject": "Technical Issue",
+    "content": "I'm having problems with..."
+})
 
-1. Classification Issues:
+# Support Response
+support_response = await support_agent.process({
+    "ticket_id": "T123",
+    "category": "SUPPORT",
+    "content": "Error message..."
+})
+
+# Meeting Scheduling
+meeting_response = await meeting_agent.process({
+    "sender": "client@example.com",
+    "preferred_times": ["2024-01-21T14:00:00Z"]
+})
+```
+
+## API Endpoints
+
+### Email Processing
 ```bash
-# Retrain classifier
-python scripts/train_classifier.py --data-path data/training
+# Process new email
+POST /api/v1/emails/process
 
-# Test classification
-python scripts/test_classifier.py --email-file test.eml
+# Get processing status
+GET /api/v1/emails/{email_id}/status
+
+# Get agent-specific response
+GET /api/v1/emails/{email_id}/response/{agent_type}
 ```
 
-2. Response Generation Issues:
+### Agent Management
 ```bash
-# Test response generation
-python scripts/test_response.py --category MEETING_REQUEST
+# Get agent status
+GET /api/v1/agents/{agent_name}/status
 
-# Update knowledge base
-python scripts/update_kb.py
+# Update agent configuration
+PUT /api/v1/agents/{agent_name}/config
 ```
 
-## Security Considerations
+## Monitoring
 
-1. Email Content Security:
-   - Content encryption
-   - PII detection and handling
-   - Secure storage practices
+### Agent Metrics
+- Processing time per agent
+- Success/failure rates
+- Classification accuracy
+- Response quality scores
 
-2. API Security:
-   - Rate limiting
-   - Request validation
-   - Authentication checks
+### System Metrics
+- Queue sizes
+- Response times
+- Resource usage
+- Error rates
 
-3. Model Security:
-   - Input sanitization
-   - Output validation
-   - Model version control
+### Dashboards
+Access monitoring at:
+- Metrics: `http://localhost:9090`
+- Agent Logs: `http://localhost:5601`
+- Traces: `http://localhost:16686`
 
-## Performance Optimization
+## Development
 
-1. Processing Optimization:
-   - Batch processing
-   - Caching strategies
-   - Async processing
-
-2. Response Generation:
-   - Template caching
-   - Knowledge base indexing
-   - Response quality checks
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch
-3. Implement changes
-4. Add tests
-5. Create Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-### Adding New Agents
+### Adding a New Agent
 
 1. Create new agent class:
 ```python
 from agents.base_agent import BaseAgent
 
 class NewAgent(BaseAgent):
-    async def process(self, data):
+    async def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         # Implementation
         pass
 ```
@@ -433,75 +348,43 @@ class NewAgent(BaseAgent):
 self.agent_mapping["NEW_CATEGORY"] = NewAgent()
 ```
 
-## Monitoring
-
-### Available Metrics
-
-1. Agent Performance:
-   - Processing time
-   - Success rates
-   - Error rates
-   - Classification accuracy
-
-2. System Metrics:
-   - Queue sizes
-   - Response times
-   - Resource usage
-
-3. Business Metrics:
-   - Email categories distribution
-   - Response satisfaction
-   - Processing volume
-
-### Dashboards
-
-Access monitoring at:
-- Metrics: `http://localhost:9090`
-- Logs: `http://localhost:5601`
-- Traces: `http://localhost:16686`
-
-## Troubleshooting
-
-### Common Issues
-
-1. Agent Failures:
-```bash
-# Check agent logs
-tail -f logs/agents.log
-
-# Reset agent state
-python scripts/reset_agent.py --agent classification
-```
-
-2. Integration Issues:
-```bash
-# Test Gmail connection
-python scripts/test_gmail.py
-
-# Verify calendar access
-python scripts/test_calendar.py
-```
-
-3. Performance Issues:
-```bash
-# Check queue status
-python scripts/check_queues.py
-
-# Monitor processing times
-python scripts/monitor_performance.py
+3. Add configuration:
+```yaml
+new_agent:
+  setting1: value1
+  setting2: value2
 ```
 
 ## Security
 
-1. Data Protection:
-   - Email encryption
-   - Secure credential storage
-   - PII handling
+### Agent Security
+- Input validation
+- Output sanitization
+- Rate limiting
+- Access control
 
-2. Access Control:
-   - API authentication
-   - Agent permissions
+### Data Security
+   - Email encryption
+- Secure storage
+   - PII handling
    - Audit logging
+
+## Testing
+
+### Agent Testing
+```python
+# Test classification
+python -m pytest tests/agents/test_classification_agent.py
+
+# Test response generation
+python -m pytest tests/agents/test_response_agents.py
+```
+
+### Integration Testing
+```python
+# Test full workflow
+python -m pytest tests/integration/test_workflow.py
+```
 
 ## Contributing
 
