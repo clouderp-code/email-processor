@@ -1,0 +1,32 @@
+email_categories:
+  - support
+  - billing
+  - sales
+  - general
+  - technical
+
+response_templates:
+  support:
+    greeting: "Thank you for contacting our support team."
+    closing: "Best regards,\nCustomer Support Team"
+  
+  billing:
+    greeting: "Thank you for your billing inquiry."
+    closing: "Best regards,\nBilling Department"
+  
+  sales:
+    greeting: "Thank you for your interest in our products."
+    closing: "Best regards,\nSales Team"
+  
+  technical:
+    greeting: "Thank you for reaching out to our technical team."
+    closing: "Best regards,\nTechnical Support Team"
+  
+  general:
+    greeting: "Thank you for your message."
+    closing: "Best regards,\nCustomer Service Team"
+
+model_settings:
+  min_confidence: 0.75
+  language: "english"
+  max_features: 1000 
