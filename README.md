@@ -339,3 +339,79 @@ For production deployment, consider:
 - FastAPI for the excellent web framework
 - Transformers library for ML capabilities
 - SQLAlchemy for database operations
+
+### Adding New Features
+
+1. Adding a New Email Category:
+```python
+# 1. Update CATEGORIES in classifier_agent.py
+CATEGORIES = [..., "NEW_CATEGORY"]
+
+# 2. Create new responder in response_generators.py
+class NewCategoryResponder(BaseResponseGenerator):
+    async def generate_response(self, email_data):
+        # Implementation
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. Classification Issues:
+```bash
+# Retrain classifier
+python scripts/train_classifier.py --data-path data/training
+
+# Test classification
+python scripts/test_classifier.py --email-file test.eml
+```
+
+2. Response Generation Issues:
+```bash
+# Test response generation
+python scripts/test_response.py --category MEETING_REQUEST
+
+# Update knowledge base
+python scripts/update_kb.py
+```
+
+## Security Considerations
+
+1. Email Content Security:
+   - Content encryption
+   - PII detection and handling
+   - Secure storage practices
+
+2. API Security:
+   - Rate limiting
+   - Request validation
+   - Authentication checks
+
+3. Model Security:
+   - Input sanitization
+   - Output validation
+   - Model version control
+
+## Performance Optimization
+
+1. Processing Optimization:
+   - Batch processing
+   - Caching strategies
+   - Async processing
+
+2. Response Generation:
+   - Template caching
+   - Knowledge base indexing
+   - Response quality checks
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Implement changes
+4. Add tests
+5. Create Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
